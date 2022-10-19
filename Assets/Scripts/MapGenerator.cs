@@ -12,10 +12,14 @@ public class MapGenerator : MonoBehaviour
     [Range(0,100)]
     [SerializeField] private int randomFillPercent;
     
-    int[,] map;
+    private int[,] map;
+
+    private MeshGenerator meshGenerator;
 
     private void Awake()
     {
+        meshGenerator = GetComponent<MeshGenerator>();
+
         GenerateMap();
     }
 
@@ -36,6 +40,9 @@ public class MapGenerator : MonoBehaviour
         {
             SmoothMap();
         }
+
+        float squareSize = 1f;
+        meshGenerator.GenerateMesh(map, squareSize);
     }
 
     private void RandomFillMap()
@@ -109,6 +116,7 @@ public class MapGenerator : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        /*
         if (map != null)
         {
             for (int x = 0; x < width; x++)
@@ -120,6 +128,6 @@ public class MapGenerator : MonoBehaviour
                     Gizmos.DrawCube(pos, Vector3.one);
                 }
             }
-        }
+        }*/
     }
 }
