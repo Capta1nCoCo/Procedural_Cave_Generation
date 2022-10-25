@@ -159,7 +159,7 @@ MonoBehaviour:
   height: 72
   seed: Capta1nCoCo
   useRandomSeed: 1
-  randomFillPercent: 55
+  randomFillPercent: 53
 --- !u!4 &541038515
 Transform:
   m_ObjectHideFlags: 0
