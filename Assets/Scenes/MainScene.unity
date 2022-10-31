@@ -157,7 +157,7 @@ MonoBehaviour:
   height: 72
   seed: Capta1nCoCo
   useRandomSeed: 1
-  randomFillPercent: 52
+  randomFillPercent: 45
 --- !u!4 &541038515
 Transform:
   m_ObjectHideFlags: 0
@@ -190,7 +190,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walls: {fileID: 1476861442}
   cave: {fileID: 1232002481}
-  is2D: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -226,7 +225,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -563,7 +562,7 @@ GameObject:
   - component: {fileID: 1272596124}
   - component: {fileID: 1272596123}
   - component: {fileID: 1272596122}
-  - component: {fileID: 1272596121}
+  - component: {fileID: 1272596127}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -571,18 +570,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1272596121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1272596120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c45e3e351e3aae944a89b2dd9117ad36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!54 &1272596122
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -677,6 +664,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1272596127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272596120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c45e3e351e3aae944a89b2dd9117ad36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1476861441
 GameObject:
   m_ObjectHideFlags: 0

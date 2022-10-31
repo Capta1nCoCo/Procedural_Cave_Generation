@@ -6,8 +6,6 @@ public class MeshGenerator : MonoBehaviour
 {
     [SerializeField] private MeshFilter walls;
     [SerializeField] private MeshFilter cave;
-    // TODO: remove puny 2D
-    [SerializeField] private bool is2D;
 
     private SquareGrid squareGrid;
 
@@ -54,15 +52,7 @@ public class MeshGenerator : MonoBehaviour
         }
         mesh.uv = uvs;
 
-        // TODO: rework for 3D
-        if (is2D)
-        {
-            Generate2DColliders();
-        }
-        else
-        {
-            CreateWallMesh();
-        }
+        CreateWallMesh();
     }
 
     private void CreateWallMesh()
@@ -98,32 +88,13 @@ public class MeshGenerator : MonoBehaviour
         wallMesh.triangles = wallTriangles.ToArray();
         walls.mesh = wallMesh;
 
-        MeshCollider wallCollider = walls.gameObject.AddComponent<MeshCollider>();
-        wallCollider.sharedMesh = wallMesh;
+        GenerateColliders(walls.gameObject, wallMesh);
     }
 
-    // TODO: rework for 3D
-    private void Generate2DColliders()
+    private void GenerateColliders(GameObject walls, Mesh wallMesh)
     {
-        EdgeCollider2D[] currentColliders2D = gameObject.GetComponents<EdgeCollider2D>();
-        for (int i = 0; i < currentColliders2D.Length; i++)
-        {
-            Destroy(currentColliders2D[i]);
-        }
-
-        CalculateMeshOutlines();
-
-        foreach (List<int> outline in outlines)
-        {
-            EdgeCollider2D edgeCollider2D = gameObject.AddComponent<EdgeCollider2D>();
-            Vector2[] edgePoints = new Vector2[outline.Count];
-
-            for (int i = 0; i < outline.Count; i++)
-            {
-                edgePoints[i] = new Vector2(vertices[outline[i]].x, vertices[outline[i]].z);
-            }
-            edgeCollider2D.points = edgePoints;
-        }
+        MeshCollider wallCollider = walls.AddComponent<MeshCollider>();
+        wallCollider.sharedMesh = wallMesh;
     }
 
     private void TriangulateSquare(Square square)
@@ -320,124 +291,5 @@ public class MeshGenerator : MonoBehaviour
         }
 
         return sharedTriangleCount == 1;
-    }
-
-    internal struct Triangle
-    {
-        public int vertexIndexA;
-        public int vertexIndexB;
-        public int vertexIndexC;
-        private int[] vertices;
-
-        public Triangle(int a, int b, int c)
-        {
-            vertexIndexA = a;
-            vertexIndexB = b;
-            vertexIndexC = c;
-
-            vertices = new int[3];
-            vertices[0] = a;
-            vertices[1] = b;
-            vertices[2] = c;
-        }
-
-        public int this[int i]
-        {
-            get
-            {
-                return vertices[i];
-            }
-        }
-
-        public bool Contains(int vertexIndex)
-        {
-            return vertexIndex == vertexIndexA || vertexIndex == vertexIndexB || vertexIndex == vertexIndexC;
-        }
-    }
-
-    public class SquareGrid
-    {
-        public Square[,] squares;
-
-        public SquareGrid(int[,] map, float squareSize)
-        {
-            int nodeCountX = map.GetLength(0);
-            int nodeCountY = map.GetLength(1);
-            float mapWidth = nodeCountX * squareSize;
-            float mapHeight = nodeCountY * squareSize;
-
-            ControlNode[,] controlNodes = new ControlNode[nodeCountX, nodeCountY];
-
-            for (int x = 0; x < nodeCountX; x++)
-            {
-                for (int y = 0; y < nodeCountY; y++)
-                {
-                    Vector3 pos = new Vector3(-mapWidth / 2 + x * squareSize + squareSize / 2, 0, -mapHeight / 2 + y * squareSize + squareSize / 2);
-                    controlNodes[x, y] = new ControlNode(pos, map[x, y] == 1, squareSize);
-                }
-            }
-
-            squares = new Square[nodeCountX - 1, nodeCountY - 1];
-            for (int x = 0; x < nodeCountX - 1; x++)
-            {
-                for (int y = 0; y < nodeCountY - 1; y++)
-                {
-                    squares[x, y] = new Square(controlNodes[x, y + 1], controlNodes[x + 1, y + 1], controlNodes[x + 1, y], controlNodes[x, y]);
-                }
-            }
-        }
-    }
-
-    public class Square
-    {
-        public ControlNode topLeft, topRight, bottomRight, bottomLeft;
-        public Node centreTop, centreRight, centreBottom, centreLeft;
-        public int configuration;
-
-        public Square(ControlNode _topLeft, ControlNode _topRight, ControlNode _bottomRight, ControlNode _bottomLeft)
-        {
-            topLeft = _topLeft;
-            topRight = _topRight;
-            bottomRight = _bottomRight;
-            bottomLeft = _bottomLeft;
-
-            centreTop = topLeft.right;
-            centreRight = bottomRight.above;
-            centreBottom = bottomLeft.right;
-            centreLeft = bottomLeft.above;
-
-            if (topLeft.active)
-                configuration += 8;
-            if (topRight.active)
-                configuration += 4;
-            if (bottomRight.active)
-                configuration += 2;
-            if (bottomLeft.active)
-                configuration += 1;
-        }
-    }
-
-    public class Node
-    {
-        public Vector3 position;
-        public int vertexIndex = -1;
-
-        public Node(Vector3 _pos)
-        {
-            position = _pos;
-        }
-    }
-
-    public class ControlNode : Node
-    {
-        public bool active;
-        public Node above, right;
-
-        public ControlNode(Vector3 _pos, bool _active, float squareSize) : base(_pos)
-        {
-            active = _active;
-            above = new Node(position + Vector3.forward * squareSize / 2f);
-            right = new Node(position + Vector3.right * squareSize / 2f);
-        }
     }
 }

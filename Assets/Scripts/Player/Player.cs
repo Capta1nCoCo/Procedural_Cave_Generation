@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerFor2D : MonoBehaviour
+public class Player : MonoBehaviour
 {
     private Rigidbody rbody;
     private Vector3 velocity;
