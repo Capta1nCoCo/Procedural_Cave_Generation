@@ -21,6 +21,11 @@ public class MapGenerator : MonoBehaviour
     {
         meshGenerator = GetComponent<MeshGenerator>();
 
+        
+    }
+
+    private void Start()
+    {
         GenerateMap();
     }
 
