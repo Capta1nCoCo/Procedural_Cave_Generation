@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(TriangleGenerator))]
+[RequireComponent(typeof(OutlineGenerator))]
 public class MeshGenerator : MonoBehaviour
 {
     [SerializeField] private MeshFilter walls;
@@ -9,22 +10,19 @@ public class MeshGenerator : MonoBehaviour
 
     private SquareGrid squareGrid;
 
-    private List<List<int>> outlines = new List<List<int>>();
-    public HashSet<int> checkedVertices = new HashSet<int>(); // temp public
-
     private TriangleGenerator triangleGenerator;
+    private OutlineGenerator outlineGenerator;
 
     private void Awake()
     {
         triangleGenerator = GetComponent<TriangleGenerator>();
+        outlineGenerator = GetComponent<OutlineGenerator>();
     }
 
     public void GenerateMesh(int[,] map, float squareSize)
     {
         triangleGenerator.ClearTriangleData();
-
-        outlines.Clear();
-        checkedVertices.Clear();
+        outlineGenerator.ClearOutlineData();
 
         squareGrid = new SquareGrid(map, squareSize);
 
@@ -58,14 +56,14 @@ public class MeshGenerator : MonoBehaviour
 
     private void CreateWallMesh()
     {
-        CalculateMeshOutlines();
+        outlineGenerator.CalculateMeshOutlines();
 
         List<Vector3> wallVertices = new List<Vector3>();
         List<int> wallTriangles = new List<int>();
         Mesh wallMesh = new Mesh();
         float wallHeight = 5f;
 
-        foreach (List<int> outline in outlines)
+        foreach (List<int> outline in outlineGenerator.getOutlines)
         {
             for (int i = 0; i < outline.Count - 1; i++)
             {
@@ -108,84 +106,5 @@ public class MeshGenerator : MonoBehaviour
         {
             Destroy(walls.GetComponent<MeshCollider>());
         }
-    }
-
-    // Outlines
-    private void CalculateMeshOutlines()
-    {
-        for (int vertexIndex = 0; vertexIndex < triangleGenerator.getVertices.Count; vertexIndex++)
-        {
-            if (!checkedVertices.Contains(vertexIndex))
-            {
-                int newOutlineVertex = GetConnectedOutlineVertex(vertexIndex);
-                if (newOutlineVertex != -1)
-                {
-                    checkedVertices.Add(vertexIndex);
-
-                    List<int> newOutline = new List<int>();
-                    newOutline.Add(vertexIndex);
-                    outlines.Add(newOutline);
-                    FollowOutline(newOutlineVertex, outlines.Count - 1);
-                    outlines[outlines.Count - 1].Add(vertexIndex);
-                }
-            }
-        }
-    }
-
-    private void FollowOutline(int vertexIndex, int outlineIndex)
-    {
-        outlines[outlineIndex].Add(vertexIndex);
-        checkedVertices.Add(vertexIndex);
-        int nextVertexIndex = GetConnectedOutlineVertex(vertexIndex);
-
-        if (nextVertexIndex != -1)
-        {
-            FollowOutline(nextVertexIndex, outlineIndex);
-        }
-    }
-
-    private int GetConnectedOutlineVertex(int vertexIndex)
-    {
-        List<Triangle> trianglesContainingVertex = triangleGenerator.getTriangleDictionary[vertexIndex];
-
-        for (int i = 0; i < trianglesContainingVertex.Count; i++)
-        {
-            Triangle triangle = trianglesContainingVertex[i];
-
-            for (int j = 0; j < 3; j++)
-            {
-                int vertexB = triangle[j];
-                
-                if (vertexB != vertexIndex && !checkedVertices.Contains(vertexB))
-                {
-                    if (IsOutlineEdge(vertexIndex, vertexB))
-                    {
-                        return vertexB;
-                    }
-                }
-            }
-        }
-
-        return -1;
-    }
-
-    private bool IsOutlineEdge(int vertexA, int vertexB)
-    {
-        List<Triangle> trianglesContainingVertexA = triangleGenerator.getTriangleDictionary[vertexA];
-        int sharedTriangleCount = 0;
-
-        for (int i = 0; i < trianglesContainingVertexA.Count; i++)
-        {
-            if (trianglesContainingVertexA[i].Contains(vertexB))
-            {
-                sharedTriangleCount++;
-                if (sharedTriangleCount > 1)
-                {
-                    break;
-                }
-            }
-        }
-
-        return sharedTriangleCount == 1;
     }
 }

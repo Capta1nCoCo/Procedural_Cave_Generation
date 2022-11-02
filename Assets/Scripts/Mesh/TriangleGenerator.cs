@@ -3,22 +3,19 @@ using UnityEngine;
 
 public class TriangleGenerator : MonoBehaviour
 {
-    // TODO: Remove MeshGenerator reference and MonoBehaviour(if possible)
-
     private List<Vector3> vertices = new List<Vector3>();
     private List<int> triangles = new List<int>();
-
     private Dictionary<int, List<Triangle>> triangleDictionary = new Dictionary<int, List<Triangle>>();
 
     public List<Vector3> getVertices { get { return vertices; } }
     public List<int> getTriangles { get { return triangles; } }
     public Dictionary<int, List<Triangle>> getTriangleDictionary { get { return triangleDictionary; } }
 
-    private MeshGenerator meshGenerator; // temp for checkedVertices
+    private OutlineGenerator outlineGenerator;
 
     private void Awake()
     {
-        meshGenerator = GetComponent<MeshGenerator>();
+        outlineGenerator = GetComponent<OutlineGenerator>();
     }
 
     public void ClearTriangleData()
@@ -86,10 +83,10 @@ public class TriangleGenerator : MonoBehaviour
             // 4 points(ControlNodes):
             case 15:
                 MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.bottomLeft);
-                meshGenerator.checkedVertices.Add(square.topLeft.vertexIndex);
-                meshGenerator.checkedVertices.Add(square.topRight.vertexIndex);
-                meshGenerator.checkedVertices.Add(square.bottomRight.vertexIndex);
-                meshGenerator.checkedVertices.Add(square.bottomLeft.vertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.topLeft.vertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.topRight.vertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.bottomRight.vertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.bottomLeft.vertexIndex);
                 break;
         }
     }
