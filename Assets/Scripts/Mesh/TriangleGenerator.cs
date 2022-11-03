@@ -83,10 +83,10 @@ public class TriangleGenerator : MonoBehaviour
             // 4 points(ControlNodes):
             case 15:
                 MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.bottomLeft);
-                outlineGenerator.AddToCheckedVertices(square.topLeft.vertexIndex);
-                outlineGenerator.AddToCheckedVertices(square.topRight.vertexIndex);
-                outlineGenerator.AddToCheckedVertices(square.bottomRight.vertexIndex);
-                outlineGenerator.AddToCheckedVertices(square.bottomLeft.vertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.topLeft.VertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.topRight.VertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.bottomRight.VertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.bottomLeft.VertexIndex);
                 break;
         }
     }
@@ -109,9 +109,9 @@ public class TriangleGenerator : MonoBehaviour
     {
         for (int i = 0; i < points.Length; i++)
         {
-            if (points[i].vertexIndex == -1)
+            if (points[i].VertexIndex == -1)
             {
-                points[i].vertexIndex = vertices.Count;
+                points[i].VertexIndex = vertices.Count;
                 vertices.Add(points[i].position);
             }
         }
@@ -119,11 +119,11 @@ public class TriangleGenerator : MonoBehaviour
 
     private void CreateTriangle(Node a, Node b, Node c)
     {
-        triangles.Add(a.vertexIndex);
-        triangles.Add(b.vertexIndex);
-        triangles.Add(c.vertexIndex);
+        triangles.Add(a.VertexIndex);
+        triangles.Add(b.VertexIndex);
+        triangles.Add(c.VertexIndex);
 
-        Triangle triangle = new Triangle(a.vertexIndex, b.vertexIndex, c.vertexIndex);
+        Triangle triangle = new Triangle(a.VertexIndex, b.VertexIndex, c.VertexIndex);
         AddTriangleToDictionary(triangle.vertexIndexA, triangle);
         AddTriangleToDictionary(triangle.vertexIndexB, triangle);
         AddTriangleToDictionary(triangle.vertexIndexC, triangle);

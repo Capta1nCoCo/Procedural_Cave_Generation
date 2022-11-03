@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class ControlNode : Node
 {
-    public bool active;
-    public Node above, right;
+    public readonly bool active;
+    public readonly Node above, right;
 
     public ControlNode(Vector3 _pos, bool _active, float squareSize) : base(_pos)
     {

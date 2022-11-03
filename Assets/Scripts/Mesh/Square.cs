@@ -1,8 +1,8 @@
 public class Square
 {
-    public ControlNode topLeft, topRight, bottomRight, bottomLeft;
-    public Node centreTop, centreRight, centreBottom, centreLeft;
-    public int configuration;
+    public readonly ControlNode topLeft, topRight, bottomRight, bottomLeft;
+    public readonly Node centreTop, centreRight, centreBottom, centreLeft;
+    public readonly int configuration;
 
     public Square(ControlNode _topLeft, ControlNode _topRight, ControlNode _bottomRight, ControlNode _bottomLeft)
     {

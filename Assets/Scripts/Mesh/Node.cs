@@ -2,8 +2,14 @@ using UnityEngine;
 
 public class Node
 {
-    public Vector3 position;
-    public int vertexIndex = -1;
+    public readonly Vector3 position;
+    private int vertexIndex = -1;
+
+    public int VertexIndex
+    {
+        get => vertexIndex;
+        set => vertexIndex = value;
+    }
 
     public Node(Vector3 _pos)
     {

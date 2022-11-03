@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class SquareGrid
 {
-    public Square[,] squares;
+    private Square[,] squares;
+    public Square[,] getSquares { get { return squares; } }
 
     public SquareGrid(int[,] map, float squareSize)
     {

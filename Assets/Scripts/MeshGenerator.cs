@@ -45,11 +45,11 @@ public class MeshGenerator : MonoBehaviour
 
     private void TriangulateGridSquares()
     {
-        for (int x = 0; x < squareGrid.squares.GetLength(0); x++)
+        for (int x = 0; x < squareGrid.getSquares.GetLength(0); x++)
         {
-            for (int y = 0; y < squareGrid.squares.GetLength(1); y++)
+            for (int y = 0; y < squareGrid.getSquares.GetLength(1); y++)
             {
-                triangleGenerator.TriangulateSquare(squareGrid.squares[x, y]);
+                triangleGenerator.TriangulateSquare(squareGrid.getSquares[x, y]);
             }
         }
     }
