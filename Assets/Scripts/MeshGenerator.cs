@@ -12,9 +12,11 @@ public class MeshGenerator : MonoBehaviour
 
     private SquareGrid squareGrid;
 
+    private Mesh caveMesh;
+    private Mesh wallMesh;
+
     private List<Vector3> wallVertices = new List<Vector3>();
     private List<int> wallTriangles = new List<int>();
-    private Mesh wallMesh;
 
     private TriangleGenerator triangleGenerator;
     private OutlineGenerator outlineGenerator;
@@ -27,11 +29,22 @@ public class MeshGenerator : MonoBehaviour
 
     public void GenerateMesh(int[,] map, float squareSize)
     {
+        InitializeMeshData(map, squareSize);
+        TriangulateGridSquares();
+        CreateCaveMesh();
+        GenerateCaveMeshUV(map, squareSize);
+        CreateWallMesh();
+    }
+
+    private void InitializeMeshData(int[,] map, float squareSize)
+    {
         triangleGenerator.ClearTriangleData();
         outlineGenerator.ClearOutlineData();
-
         squareGrid = new SquareGrid(map, squareSize);
+    }
 
+    private void TriangulateGridSquares()
+    {
         for (int x = 0; x < squareGrid.squares.GetLength(0); x++)
         {
             for (int y = 0; y < squareGrid.squares.GetLength(1); y++)
@@ -39,15 +52,20 @@ public class MeshGenerator : MonoBehaviour
                 triangleGenerator.TriangulateSquare(squareGrid.squares[x, y]);
             }
         }
+    }
 
-        Mesh mesh = new Mesh();
-        cave.mesh = mesh;
+    private void CreateCaveMesh()
+    {
+        caveMesh = new Mesh();
+        cave.mesh = caveMesh;
+        caveMesh.vertices = triangleGenerator.getVertices.ToArray();
+        caveMesh.triangles = triangleGenerator.getTriangles.ToArray();
+        caveMesh.RecalculateNormals();
+    }
 
-        mesh.vertices = triangleGenerator.getVertices.ToArray();
-        mesh.triangles = triangleGenerator.getTriangles.ToArray();
-        mesh.RecalculateNormals();
-
-        int tileAmount = 10;
+    private void GenerateCaveMeshUV(int[,] map, float squareSize)
+    {
+        int tileAmount = 10; // TODO: serialize in future texture related class
         Vector2[] uvs = new Vector2[triangleGenerator.getVertices.Count];
         for (int i = 0; i < triangleGenerator.getVertices.Count; i++)
         {
@@ -55,9 +73,7 @@ public class MeshGenerator : MonoBehaviour
             float percentY = Mathf.InverseLerp(-map.GetLength(0) / 2 * squareSize, map.GetLength(0) / 2 * squareSize, triangleGenerator.getVertices[i].z) * tileAmount;
             uvs[i] = new Vector2(percentX, percentY);
         }
-        mesh.uv = uvs;
-
-        CreateWallMesh();
+        caveMesh.uv = uvs;
     }
 
     private void CreateWallMesh()
