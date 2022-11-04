@@ -83,10 +83,10 @@ public class TriangleGenerator : MonoBehaviour
             // 4 points(ControlNodes):
             case 15:
                 MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.bottomLeft);
-                outlineGenerator.AddToCheckedVertices(square.topLeft.VertexIndex);
-                outlineGenerator.AddToCheckedVertices(square.topRight.VertexIndex);
-                outlineGenerator.AddToCheckedVertices(square.bottomRight.VertexIndex);
-                outlineGenerator.AddToCheckedVertices(square.bottomLeft.VertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.topLeft.getVertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.topRight.getVertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.bottomRight.getVertexIndex);
+                outlineGenerator.AddToCheckedVertices(square.bottomLeft.getVertexIndex);
                 break;
         }
     }
@@ -109,9 +109,9 @@ public class TriangleGenerator : MonoBehaviour
     {
         for (int i = 0; i < points.Length; i++)
         {
-            if (points[i].VertexIndex == -1)
+            if (points[i].getVertexIndex == -1)
             {
-                points[i].VertexIndex = vertices.Count;
+                points[i].setVertexIndex = vertices.Count;
                 vertices.Add(points[i].position);
             }
         }
@@ -119,11 +119,11 @@ public class TriangleGenerator : MonoBehaviour
 
     private void CreateTriangle(Node a, Node b, Node c)
     {
-        triangles.Add(a.VertexIndex);
-        triangles.Add(b.VertexIndex);
-        triangles.Add(c.VertexIndex);
+        triangles.Add(a.getVertexIndex);
+        triangles.Add(b.getVertexIndex);
+        triangles.Add(c.getVertexIndex);
 
-        Triangle triangle = new Triangle(a.VertexIndex, b.VertexIndex, c.VertexIndex);
+        Triangle triangle = new Triangle(a.getVertexIndex, b.getVertexIndex, c.getVertexIndex);
         AddTriangleToDictionary(triangle.vertexIndexA, triangle);
         AddTriangleToDictionary(triangle.vertexIndexB, triangle);
         AddTriangleToDictionary(triangle.vertexIndexC, triangle);

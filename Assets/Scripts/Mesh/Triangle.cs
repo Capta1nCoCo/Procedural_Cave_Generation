@@ -1,8 +1,9 @@
 public struct Triangle
 {
-    public int vertexIndexA;
-    public int vertexIndexB;
-    public int vertexIndexC;
+    public readonly int vertexIndexA;
+    public readonly int vertexIndexB;
+    public readonly int vertexIndexC;
+
     private int[] vertices;
 
     public Triangle(int a, int b, int c)
