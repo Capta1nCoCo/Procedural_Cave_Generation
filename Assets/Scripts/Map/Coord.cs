@@ -1,7 +1,7 @@
 public struct Coord
 {
-    public int tileX;
-    public int tileY;
+    public readonly int tileX;
+    public readonly int tileY;
 
     public Coord(int x, int y)
     {

@@ -107,8 +107,8 @@ public class MapGenerator : MonoBehaviour
         }
 
         survivingRooms.Sort();
-        survivingRooms[0].isMainRoom = true;
-        survivingRooms[0].isAccessibleFromMainRoom = true;
+        survivingRooms[0].setIsMainRoom = true;
+        survivingRooms[0].setIsAccessibleFromMainRoom = true;
 
         ConnectClosestRooms(survivingRooms);
     }
@@ -122,7 +122,7 @@ public class MapGenerator : MonoBehaviour
         {
             foreach (Room room in allRooms)
             {
-                if (room.isAccessibleFromMainRoom)
+                if (room.getIsAccessibleFromMainRoom)
                 {
                     roomListB.Add(room);
                 }

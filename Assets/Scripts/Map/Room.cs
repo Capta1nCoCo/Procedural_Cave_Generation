@@ -3,12 +3,17 @@ using System.Collections.Generic;
 
 public class Room : IComparable<Room>
 {
-    public List<Coord> tiles;
-    public List<Coord> edgeTiles;
-    public List<Room> connectedRooms;
-    public int roomSize;
-    public bool isAccessibleFromMainRoom;
-    public bool isMainRoom;
+    public readonly List<Coord> tiles;
+    public readonly List<Coord> edgeTiles;
+    public readonly List<Room> connectedRooms;
+    public readonly int roomSize;
+
+    private bool isAccessibleFromMainRoom;
+    private bool isMainRoom;
+
+    public bool getIsAccessibleFromMainRoom { get { return isAccessibleFromMainRoom; } }
+    public bool setIsAccessibleFromMainRoom { set { isAccessibleFromMainRoom = value; } }
+    public bool setIsMainRoom { set { isMainRoom = value; } }
 
     public Room() { }
 
