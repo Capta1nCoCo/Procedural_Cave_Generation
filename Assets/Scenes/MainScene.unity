@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 541038515}
   - component: {fileID: 541038514}
+  - component: {fileID: 541038519}
   - component: {fileID: 541038516}
   - component: {fileID: 541038517}
   - component: {fileID: 541038518}
@@ -159,7 +160,7 @@ MonoBehaviour:
   height: 72
   seed: Capta1nCoCo
   useRandomSeed: 1
-  randomFillPercent: 45
+  randomFillPercent: 50
 --- !u!4 &541038515
 Transform:
   m_ObjectHideFlags: 0
@@ -192,6 +193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walls: {fileID: 1476861442}
   cave: {fileID: 1232002481}
+  wallHeight: 5
 --- !u!114 &541038517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,6 +218,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b225afeb42b7a4ebce64bb696b24d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &541038519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 541038513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5af9c2771aafa994f8d3ae0384a64eb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  passageRadius: 5
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshGenerator))]
+[RequireComponent(typeof(PassageCreator))]
 public class MapGenerator : MonoBehaviour
 {
     [SerializeField] private int width;
@@ -17,10 +18,19 @@ public class MapGenerator : MonoBehaviour
     private int[,] map;
 
     private MeshGenerator meshGenerator;
+    private PassageCreator passageCreator;
+
+    public int getWidth { get { return width; } }
+    public int getHeight { get { return height; } }
+    public void SetMap(int rowIndex, int columnIndex, int value)
+    {
+        map[rowIndex, columnIndex] = value;
+    }
 
     private void Awake()
     {
-        meshGenerator = GetComponent<MeshGenerator>();        
+        meshGenerator = GetComponent<MeshGenerator>();
+        passageCreator = GetComponent<PassageCreator>();
     }
 
     private void Start()
@@ -37,6 +47,11 @@ public class MapGenerator : MonoBehaviour
         }
     }
 #endif
+
+    public bool IsInMapRange(int x, int y)
+    {
+        return x >= 0 && x < width && y >= 0 && y < height;
+    }
 
     private void GenerateMap()
     {
@@ -317,13 +332,13 @@ public class MapGenerator : MonoBehaviour
 
             if (possibleConnectionFound && !forceAccessibilityFromMainRoom)
             {
-                CreatePassage(bestRoomA, bestRoomB, bestTileA, bestTileB);
+                passageCreator.CreatePassage(bestRoomA, bestRoomB, bestTileA, bestTileB);
             }
         }
 
         if (possibleConnectionFound && forceAccessibilityFromMainRoom)
         {
-            CreatePassage(bestRoomA, bestRoomB, bestTileA, bestTileB);
+            passageCreator.CreatePassage(bestRoomA, bestRoomB, bestTileA, bestTileB);
             ConnectClosestRooms(allRooms, true);
         }
 
@@ -331,107 +346,5 @@ public class MapGenerator : MonoBehaviour
         {
             ConnectClosestRooms(allRooms, true);
         }
-    }
-
-    private void CreatePassage(Room roomA, Room roomB, Coord tileA, Coord tileB)
-    {
-        Room.ConnectRooms(roomA, roomB);
-        Debug.DrawLine(CoordToWorldPoint(tileA), CoordToWorldPoint(tileB), Color.green, 100f);
-
-        List<Coord> line = GetLine(tileA, tileB);
-        int passageRadius = 5;
-        foreach (Coord coord in line)
-        {
-            DrawCircle(coord, passageRadius);
-        }
-    }
-
-    private void DrawCircle(Coord coord, int radius)
-    {
-        for (int x = -radius; x <= radius; x++)
-        {
-            for (int y = -radius; y <= radius; y++)
-            {
-                if (x*x + y*y <= radius*radius)
-                {
-                    int drawX = coord.tileX + x;
-                    int drawY = coord.tileY + y;
-                    if (IsInMapRange(drawX, drawY))
-                    {
-                        map[drawX, drawY] = 0;
-                    }
-                }
-            }
-        }
-    }
-
-    private List<Coord> GetLine(Coord from, Coord to)
-    {
-        List<Coord> line = new List<Coord>();
-
-        int x = from.tileX;
-        int y = from.tileY;
-
-        int deltaX = to.tileX - from.tileX;
-        int deltaY = to.tileY - from.tileY;
-
-        bool inverted = false;
-        int step = Math.Sign(deltaX);
-        int gradientStep = Math.Sign(deltaY);
-
-        int longest = Mathf.Abs(deltaX);
-        int shortest = Mathf.Abs(deltaY);
-
-        if (longest < shortest)
-        {
-            inverted = true;
-            longest = Mathf.Abs(deltaY);
-            shortest = Mathf.Abs(deltaX);
-
-            step = Math.Sign(deltaY);
-            gradientStep = Math.Sign(deltaX);
-        }
-
-        int gradientAccumulation = longest / 2;
-        for (int i = 0; i < longest; i++)
-        {
-            line.Add(new Coord(x, y));
-
-            if (inverted)
-            {
-                y += step;
-            }
-            else
-            {
-                x += step;
-            }
-
-            gradientAccumulation += shortest;
-            if (gradientAccumulation >= longest)
-            {
-                if (inverted)
-                {
-                    x += gradientStep;
-                }
-                else
-                {
-                    y += gradientStep;
-                }
-                gradientAccumulation -= longest;
-            }
-        }
-
-        return line;
-    }
-
-    private Vector3 CoordToWorldPoint(Coord tile)
-    {
-        return new Vector3(-width / 2 + .5f + tile.tileX, 2f, -height / 2 + .5f + tile.tileY);
-    }
-
-    //make public, gonna be used in several classes
-    private bool IsInMapRange(int x, int y)
-    {
-        return x >= 0 && x < width && y >= 0 && y < height;
     }
 }
