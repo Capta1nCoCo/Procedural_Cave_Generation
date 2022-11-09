@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 541038514}
   - component: {fileID: 541038519}
   - component: {fileID: 541038516}
+  - component: {fileID: 541038520}
   - component: {fileID: 541038517}
   - component: {fileID: 541038518}
   m_Layer: 0
@@ -231,6 +232,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   passageRadius: 5
+--- !u!114 &541038520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 541038513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3ca870a0de6f0a4e976f7c91fa0ed58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
