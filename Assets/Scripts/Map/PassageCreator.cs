@@ -44,7 +44,7 @@ public class PassageCreator : MonoBehaviour
                     if (mapGenerator.IsInMapRange(drawX, drawY))
                     {
                         int floor = 0;
-                        mapGenerator.SetMap(drawX, drawY, floor);
+                        mapGenerator.SetMapTile(drawX, drawY, floor);
                     }
                 }
             }

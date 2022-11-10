@@ -20,13 +20,6 @@ public class MapGenerator : MonoBehaviour
     private MeshGenerator meshGenerator;
     private RoomConnector roomConnector;
 
-    public int getWidth { get { return width; } }
-    public int getHeight { get { return height; } }
-    public void SetMap(int rowIndex, int columnIndex, int value)
-    {
-        map[rowIndex, columnIndex] = value;
-    }
-
     private void Awake()
     {
         meshGenerator = GetComponent<MeshGenerator>();
@@ -47,11 +40,6 @@ public class MapGenerator : MonoBehaviour
         }
     }
 #endif
-
-    public bool IsInMapRange(int x, int y)
-    {
-        return x >= 0 && x < width && y >= 0 && y < height;
-    }
 
     private void GenerateMap()
     {
@@ -257,4 +245,18 @@ public class MapGenerator : MonoBehaviour
 
         return tiles;
     }
+
+    public bool IsInMapRange(int x, int y)
+    {
+        return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
+    public void SetMapTile(int rowIndex, int columnIndex, int value)
+    {
+        map[rowIndex, columnIndex] = value;
+    }
+
+    public int getWidth { get { return width; } }
+
+    public int getHeight { get { return height; } }
 }

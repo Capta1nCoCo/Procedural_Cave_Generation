@@ -11,10 +11,6 @@ public class Room : IComparable<Room>
     private bool isAccessibleFromMainRoom;
     private bool isMainRoom;
 
-    public bool getIsAccessibleFromMainRoom { get { return isAccessibleFromMainRoom; } }
-    public bool setIsAccessibleFromMainRoom { set { isAccessibleFromMainRoom = value; } }
-    public bool setIsMainRoom { set { isMainRoom = value; } }
-
     public Room() { }
 
     public Room(List<Coord> roomTiles, int[,] map)
@@ -77,4 +73,10 @@ public class Room : IComparable<Room>
     {
         return otherRoom.roomSize.CompareTo(roomSize);
     }
+
+    public bool getIsAccessibleFromMainRoom { get { return isAccessibleFromMainRoom; } }
+
+    public bool setIsAccessibleFromMainRoom { set { isAccessibleFromMainRoom = value; } }
+
+    public bool setIsMainRoom { set { isMainRoom = value; } }
 }
