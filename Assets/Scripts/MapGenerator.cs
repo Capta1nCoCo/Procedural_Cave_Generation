@@ -4,6 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(MeshGenerator))]
 [RequireComponent(typeof(RoomConnector))]
+[RequireComponent(typeof(RegionFinder))]
 public class MapGenerator : MonoBehaviour
 {
     [SerializeField] private int width;
@@ -19,11 +20,13 @@ public class MapGenerator : MonoBehaviour
 
     private MeshGenerator meshGenerator;
     private RoomConnector roomConnector;
+    private RegionFinder regionFinder;
 
     private void Awake()
     {
         meshGenerator = GetComponent<MeshGenerator>();
         roomConnector = GetComponent<RoomConnector>();
+        regionFinder = GetComponent<RegionFinder>();
     }
 
     private void Start()
@@ -100,6 +103,7 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
+    // SmoothMap & GetSurroundingWallCount deserve their own class
     private void SmoothMap()
     {
         for (int x = 0; x < width; x++)
@@ -118,48 +122,6 @@ public class MapGenerator : MonoBehaviour
                 }
             }
         }
-    }
-
-    private void ProcessMap()
-    {
-        List<List<Coord>> wallRegions = GetRegions(1); // 1 - wall, 0 - empty tile;
-        int wallThresholdSize = 50;
-
-        foreach (List<Coord> wallRegion in wallRegions)
-        {
-            if (wallRegion.Count < wallThresholdSize)
-            {
-                foreach(Coord tile in wallRegion)
-                {
-                    map[tile.tileX, tile.tileY] = 0;
-                }
-            }
-        }
-
-        List<List<Coord>> roomRegions = GetRegions(0); // 1 - wall, 0 - empty tile;
-        int roomThresholdSize = 50;
-        List<Room> survivingRooms = new List<Room>();
-
-        foreach (List<Coord> roomRegion in roomRegions)
-        {
-            if (roomRegion.Count < roomThresholdSize)
-            {
-                foreach (Coord tile in roomRegion)
-                {
-                    map[tile.tileX, tile.tileY] = 1;
-                }
-            }
-            else
-            {
-                survivingRooms.Add(new Room(roomRegion, map));
-            }
-        }
-
-        survivingRooms.Sort();
-        survivingRooms[0].setIsMainRoom = true;
-        survivingRooms[0].setIsAccessibleFromMainRoom = true;
-
-        roomConnector.ConnectClosestRooms(survivingRooms);
     }
 
     private int GetSurroundingWallCount(int gridX, int gridY)
@@ -186,64 +148,46 @@ public class MapGenerator : MonoBehaviour
         return wallCount;
     }
 
-    //Getting Regions & RegionTiles
-    private List<List<Coord>> GetRegions(int tileType)
+    private void ProcessMap()
     {
-        List<List<Coord>> regions = new List<List<Coord>>();
-        int[,] mapFlags = new int[width, height];
+        List<List<Coord>> wallRegions = regionFinder.GetRegions(1); // 1 - wall, 0 - empty tile;
+        int wallThresholdSize = 50;
 
-        for (int x = 0; x < width; x++)
+        foreach (List<Coord> wallRegion in wallRegions)
         {
-            for (int y = 0; y < height; y++)
+            if (wallRegion.Count < wallThresholdSize)
             {
-                if (mapFlags[x, y] == 0 && map[x, y] == tileType)
+                foreach(Coord tile in wallRegion)
                 {
-                    List<Coord> newRegion = GetRegionTiles(x, y);
-                    regions.Add(newRegion);
-
-                    foreach (Coord tile in newRegion)
-                    {
-                        mapFlags[tile.tileX, tile.tileY] = 1;
-                    }
+                    map[tile.tileX, tile.tileY] = 0;
                 }
             }
         }
 
-        return regions;
-    }
+        List<List<Coord>> roomRegions = regionFinder.GetRegions(0); // 1 - wall, 0 - empty tile;
+        int roomThresholdSize = 50;
+        List<Room> survivingRooms = new List<Room>();
 
-    private List<Coord> GetRegionTiles(int startX, int startY)
-    {
-        List<Coord> tiles = new List<Coord>();
-        int[,] mapFlags = new int[width, height];
-        int tileType = map[startX, startY];
-
-        Queue<Coord> queue = new Queue<Coord>();
-        queue.Enqueue(new Coord(startX, startY));
-        mapFlags[startX, startY] = 1; // 1 - checked, 0 - unchecked;
-
-        while (queue.Count > 0)
+        foreach (List<Coord> roomRegion in roomRegions)
         {
-            Coord tile = queue.Dequeue();
-            tiles.Add(tile);
-
-            for (int x = tile.tileX - 1; x <= tile.tileX + 1; x++)
+            if (roomRegion.Count < roomThresholdSize)
             {
-                for (int y = tile.tileY - 1; y <= tile.tileY + 1; y++)
+                foreach (Coord tile in roomRegion)
                 {
-                    if (IsInMapRange(x, y) && (y == tile.tileY || x == tile.tileX))
-                    {
-                        if (mapFlags[x, y] == 0 && map[x, y] == tileType)
-                        {
-                            mapFlags[x, y] = 1;
-                            queue.Enqueue(new Coord(x, y));
-                        }
-                    }
+                    map[tile.tileX, tile.tileY] = 1;
                 }
+            }
+            else
+            {
+                survivingRooms.Add(new Room(roomRegion, map));
             }
         }
 
-        return tiles;
+        survivingRooms.Sort();
+        survivingRooms[0].setIsMainRoom = true;
+        survivingRooms[0].setIsAccessibleFromMainRoom = true;
+
+        roomConnector.ConnectClosestRooms(survivingRooms);
     }
 
     public bool IsInMapRange(int x, int y)
@@ -259,4 +203,6 @@ public class MapGenerator : MonoBehaviour
     public int getWidth { get { return width; } }
 
     public int getHeight { get { return height; } }
+
+    public int[,] getMap { get { return map; } }
 }
