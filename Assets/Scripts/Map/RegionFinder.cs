@@ -7,10 +7,6 @@ public class RegionFinder : MonoBehaviour
     private const int tileUnchecked = 0;
     private const int tileChecked = 1;
 
-    private int width;
-    private int height;
-    private int[,] map;
-
     private MapGenerator mapGenerator;
 
     private void Awake()
@@ -20,18 +16,14 @@ public class RegionFinder : MonoBehaviour
 
     public List<List<Coord>> GetRegions(int tileType)
     {
-        width = mapGenerator.getWidth;
-        height = mapGenerator.getHeight;
-        map = mapGenerator.getMap;
-
         List<List<Coord>> regions = new List<List<Coord>>();
-        int[,] mapFlags = new int[width, height];
+        int[,] mapFlags = new int[mapGenerator.getWidth, mapGenerator.getHeight];
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < mapGenerator.getWidth; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < mapGenerator.getHeight; y++)
             {
-                if (mapFlags[x, y] == tileUnchecked && map[x, y] == tileType)
+                if (mapFlags[x, y] == tileUnchecked && mapGenerator.getMap[x, y] == tileType)
                 {
                     List<Coord> newRegion = GetRegionTiles(x, y);
                     regions.Add(newRegion);
@@ -50,8 +42,8 @@ public class RegionFinder : MonoBehaviour
     private List<Coord> GetRegionTiles(int startX, int startY)
     {
         List<Coord> tiles = new List<Coord>();
-        int[,] mapFlags = new int[width, height];
-        int tileType = map[startX, startY];
+        int[,] mapFlags = new int[mapGenerator.getWidth, mapGenerator.getHeight];
+        int tileType = mapGenerator.getMap[startX, startY];
 
         Queue<Coord> queue = new Queue<Coord>();
         queue.Enqueue(new Coord(startX, startY));
@@ -68,7 +60,7 @@ public class RegionFinder : MonoBehaviour
                 {
                     if (mapGenerator.IsInMapRange(x, y) && (y == tile.tileY || x == tile.tileX))
                     {
-                        if (mapFlags[x, y] == tileUnchecked && map[x, y] == tileType)
+                        if (mapFlags[x, y] == tileUnchecked && mapGenerator.getMap[x, y] == tileType)
                         {
                             mapFlags[x, y] = tileChecked;
                             queue.Enqueue(new Coord(x, y));

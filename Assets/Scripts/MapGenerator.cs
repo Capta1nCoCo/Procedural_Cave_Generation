@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshGenerator))]
 [RequireComponent(typeof(RoomConnector))]
 [RequireComponent(typeof(RegionFinder))]
+[RequireComponent(typeof(MapSmoother))]
 public class MapGenerator : MonoBehaviour
 {
     [SerializeField] private int width;
@@ -21,12 +22,14 @@ public class MapGenerator : MonoBehaviour
     private MeshGenerator meshGenerator;
     private RoomConnector roomConnector;
     private RegionFinder regionFinder;
+    private MapSmoother mapSmoother;
 
     private void Awake()
     {
         meshGenerator = GetComponent<MeshGenerator>();
         roomConnector = GetComponent<RoomConnector>();
         regionFinder = GetComponent<RegionFinder>();
+        mapSmoother = GetComponent<MapSmoother>();
     }
 
     private void Start()
@@ -51,7 +54,7 @@ public class MapGenerator : MonoBehaviour
 
         for (int i = 0; i < 5; i++)
         {
-            SmoothMap();
+            mapSmoother.SmoothMap();
         }
 
         ProcessMap();
@@ -101,51 +104,6 @@ public class MapGenerator : MonoBehaviour
                 }
             }
         }
-    }
-
-    // SmoothMap & GetSurroundingWallCount deserve their own class
-    private void SmoothMap()
-    {
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                int neighbourWallTiles = GetSurroundingWallCount(x, y);
-
-                if (neighbourWallTiles > 4)
-                {
-                    map[x, y] = 1;
-                }
-                else if (neighbourWallTiles < 4)
-                {
-                    map[x, y] = 0;
-                }
-            }
-        }
-    }
-
-    private int GetSurroundingWallCount(int gridX, int gridY)
-    {
-        int wallCount = 0;
-        for (int neighbourX = gridX - 1; neighbourX <= gridX + 1; neighbourX++)
-        {
-            for (int neighbourY = gridY - 1; neighbourY <= gridY + 1; neighbourY++)
-            {
-                if (IsInMapRange(neighbourX, neighbourY))
-                {
-                    if (neighbourX != gridX || neighbourY != gridY)
-                    {
-                        wallCount += map[neighbourX, neighbourY];
-                    }
-                }
-                else
-                {
-                    wallCount++;
-                }
-            }
-        }
-
-        return wallCount;
     }
 
     private void ProcessMap()
