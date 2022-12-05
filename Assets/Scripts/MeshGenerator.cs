@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(TriangleGenerator))]
-[RequireComponent(typeof(OutlineGenerator))]
+[RequireComponent(typeof(TriangleCalculator))]
+[RequireComponent(typeof(OutlineCalculator))]
 public class MeshGenerator : MonoBehaviour
 {
     [SerializeField] private MeshFilter walls;
@@ -18,13 +18,13 @@ public class MeshGenerator : MonoBehaviour
     private List<Vector3> wallVertices = new List<Vector3>();
     private List<int> wallTriangles = new List<int>();
 
-    private TriangleGenerator triangleGenerator;
-    private OutlineGenerator outlineGenerator;
+    private TriangleCalculator triangleGenerator;
+    private OutlineCalculator outlineGenerator;
 
     private void Awake()
     {
-        triangleGenerator = GetComponent<TriangleGenerator>();
-        outlineGenerator = GetComponent<OutlineGenerator>();
+        triangleGenerator = GetComponent<TriangleCalculator>();
+        outlineGenerator = GetComponent<OutlineCalculator>();
     }
 
     public void GenerateMesh(int[,] map, float squareSize)

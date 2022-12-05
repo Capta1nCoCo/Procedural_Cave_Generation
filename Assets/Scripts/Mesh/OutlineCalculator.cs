@@ -1,18 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OutlineGenerator : MonoBehaviour
+public class OutlineCalculator : MonoBehaviour
 {
     private List<List<int>> outlines = new List<List<int>>();
     private HashSet<int> checkedVertices = new HashSet<int>();
 
     public List<List<int>> getOutlines { get { return outlines; } }
 
-    private TriangleGenerator triangleGenerator;
+    private TriangleCalculator triangleGenerator;
 
     private void Awake()
     {
-        triangleGenerator = GetComponent<TriangleGenerator>();
+        triangleGenerator = GetComponent<TriangleCalculator>();
     }
 
     public void ClearOutlineData()

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TriangleGenerator : MonoBehaviour
+public class TriangleCalculator : MonoBehaviour
 {
     private List<Vector3> vertices = new List<Vector3>();
     private List<int> triangles = new List<int>();
@@ -11,11 +11,11 @@ public class TriangleGenerator : MonoBehaviour
     public List<int> getTriangles { get { return triangles; } }
     public Dictionary<int, List<Triangle>> getTriangleDictionary { get { return triangleDictionary; } }
 
-    private OutlineGenerator outlineGenerator;
+    private OutlineCalculator outlineGenerator;
 
     private void Awake()
     {
-        outlineGenerator = GetComponent<OutlineGenerator>();
+        outlineGenerator = GetComponent<OutlineCalculator>();
     }
 
     public void ClearTriangleData()
