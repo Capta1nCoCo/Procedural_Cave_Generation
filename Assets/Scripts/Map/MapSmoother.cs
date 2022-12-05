@@ -15,17 +15,24 @@ public class MapSmoother : MonoBehaviour
         {
             for (int y = 0; y < mapGenerator.getHeight; y++)
             {
-                int neighbourWallTiles = GetSurroundingWallCount(x, y);
-
-                if (neighbourWallTiles > 4)
-                {
-                    mapGenerator.SetMapTile(x, y, 1);
-                }
-                else if (neighbourWallTiles < 4)
-                {
-                    mapGenerator.SetMapTile(x, y, 0);
-                }
+                SmoothTile(x, y);
             }
+        }
+    }
+
+    private void SmoothTile(int x, int y)
+    {
+        int neighbourWallTiles = GetSurroundingWallCount(x, y);
+        int wall = 1;
+        int floor = 0;
+
+        if (neighbourWallTiles > 4)
+        {
+            mapGenerator.SetMapTile(x, y, wall);
+        }
+        else if (neighbourWallTiles < 4)
+        {
+            mapGenerator.SetMapTile(x, y, floor);
         }
     }
 
