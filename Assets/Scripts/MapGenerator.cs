@@ -17,7 +17,13 @@ public class MapGenerator : MonoBehaviour
     [Range(0,100)]
     [SerializeField] private int randomFillPercent;
     
+    private const int WALL = 1;
+    private const int FLOOR = 0;
+    private const int BORDER_SIZE = 1;
+    private const float SQUARE_SIZE = 1f;
+
     private int[,] map;
+    private int[,] borderedMap;
 
     private MeshGenerator meshGenerator;
     private RoomConnector roomConnector;
@@ -51,58 +57,54 @@ public class MapGenerator : MonoBehaviour
     {
         map = new int[width, height];
         RandomFillMap();
-
-        for (int i = 0; i < 5; i++)
-        {
-            mapSmoother.SmoothMap();
-        }
-
+        SmoothMapXTimes(5);
         ProcessMap();
-
-        int borderSize = 1;
-        int[,] borderedMap = new int[width + borderSize * 2, height + borderSize * 2];
-
-        for (int x = 0; x < borderedMap.GetLength(0); x++)
-        {
-            for (int y = 0; y < borderedMap.GetLength(1); y++)
-            {
-                if (x >= borderSize && x < width + borderSize && y >= borderSize && y < height + borderSize)
-                {
-                    borderedMap[x, y] = map[x - borderSize, y - borderSize];
-                }
-                else
-                {
-                    borderedMap[x, y] = 1;
-                }
-            }
-        }
-
-        float squareSize = 1f;
-        meshGenerator.GenerateMesh(borderedMap, squareSize);
+        CalculateBorderedMap();
     }
 
     private void RandomFillMap()
+    {
+        UseRandomSeed();
+        PesudoRandomFillMap();
+    }
+
+    private void UseRandomSeed()
     {
         if (useRandomSeed)
         {
             seed = Time.time.ToString();
         }
+    }
 
+    private void PesudoRandomFillMap()
+    {
         System.Random pseudoRandom = new System.Random(seed.GetHashCode());
-
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
-                {
-                    map[x, y] = 1;
-                }
-                else
-                {
-                    map[x, y] = pseudoRandom.Next(0, 100) < randomFillPercent ? 1 : 0;
-                }
+                CreateRandomMapWithEdgeWalls(pseudoRandom, x, y);
             }
+        }
+    }
+
+    private void CreateRandomMapWithEdgeWalls(System.Random pseudoRandom, int x, int y)
+    {
+        if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
+        {
+            map[x, y] = WALL;
+        }
+        else
+        {
+            map[x, y] = pseudoRandom.Next(0, 100) < randomFillPercent ? WALL : FLOOR;
+        }
+    }
+
+    private void SmoothMapXTimes(int x)
+    {
+        for (int i = 0; i < x; i++)
+        {
+            mapSmoother.SmoothMap();
         }
     }
 
@@ -146,6 +148,26 @@ public class MapGenerator : MonoBehaviour
         survivingRooms[0].setIsAccessibleFromMainRoom = true;
 
         roomConnector.ConnectClosestRooms(survivingRooms);
+    }
+
+    private void CalculateBorderedMap()
+    {
+        borderedMap = new int[width + BORDER_SIZE * 2, height + BORDER_SIZE * 2];
+        for (int x = 0; x < borderedMap.GetLength(0); x++)
+        {
+            for (int y = 0; y < borderedMap.GetLength(1); y++)
+            {
+                if (x >= BORDER_SIZE && x < width + BORDER_SIZE && y >= BORDER_SIZE && y < height + BORDER_SIZE)
+                {
+                    borderedMap[x, y] = map[x - BORDER_SIZE, y - BORDER_SIZE];
+                }
+                else
+                {
+                    borderedMap[x, y] = 1;
+                }
+            }
+        }
+        meshGenerator.GenerateMesh(borderedMap, SQUARE_SIZE);
     }
 
     public bool IsInMapRange(int x, int y)
