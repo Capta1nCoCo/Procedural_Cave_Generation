@@ -8,15 +8,23 @@ using UnityEngine;
 [RequireComponent(typeof(MapSmoother))]
 public class MapGenerator : MonoBehaviour
 {
+    [Header("Map Size")]
     [SerializeField] private int width;
     [SerializeField] private int height;
 
+    [Header("Random Generation")]
     [SerializeField] private string seed;
     [SerializeField] private bool useRandomSeed;
-
     [Range(0,100)]
     [SerializeField] private int randomFillPercent;
-    
+
+    [Header("Regions")]
+    [Tooltip("Bellow 50 allows small pillars to be spawned")]
+    [SerializeField] private int wallThresholdSize = 50;
+    [Tooltip("Bellow 50 allows small rooms(unconnected) to be spawned")]
+    [SerializeField] private int roomThresholdSize = 50;
+
+
     private const int WALL = 1;
     private const int FLOOR = 0;
     private const int BORDER_SIZE = 1;
@@ -110,43 +118,61 @@ public class MapGenerator : MonoBehaviour
 
     private void ProcessMap()
     {
-        List<List<Coord>> wallRegions = regionFinder.GetRegions(1); // 1 - wall, 0 - empty tile;
-        int wallThresholdSize = 50;
+        AllocateWalls();
+        AllocateRooms();
+    }
 
+    private void AllocateWalls()
+    {
+        List<List<Coord>> wallRegions = regionFinder.GetRegions(WALL);
         foreach (List<Coord> wallRegion in wallRegions)
         {
             if (wallRegion.Count < wallThresholdSize)
             {
-                foreach(Coord tile in wallRegion)
-                {
-                    map[tile.tileX, tile.tileY] = 0;
-                }
+                RemovePillar(wallRegion);
             }
         }
+    }
 
-        List<List<Coord>> roomRegions = regionFinder.GetRegions(0); // 1 - wall, 0 - empty tile;
-        int roomThresholdSize = 50;
+    private void RemovePillar(List<Coord> wallRegion)
+    {
+        foreach (Coord tile in wallRegion)
+        {
+            map[tile.tileX, tile.tileY] = FLOOR;
+        }
+    }
+
+    private void AllocateRooms()
+    {
+        List<List<Coord>> roomRegions = regionFinder.GetRegions(FLOOR);
         List<Room> survivingRooms = new List<Room>();
-
         foreach (List<Coord> roomRegion in roomRegions)
         {
             if (roomRegion.Count < roomThresholdSize)
             {
-                foreach (Coord tile in roomRegion)
-                {
-                    map[tile.tileX, tile.tileY] = 1;
-                }
+                RemoveCheeseHole(roomRegion);
             }
             else
             {
                 survivingRooms.Add(new Room(roomRegion, map));
             }
         }
+        ConnectSurvivingRooms(survivingRooms);
+    }
 
+    private void RemoveCheeseHole(List<Coord> roomRegion)
+    {
+        foreach (Coord tile in roomRegion)
+        {
+            map[tile.tileX, tile.tileY] = WALL;
+        }
+    }
+
+    private void ConnectSurvivingRooms(List<Room> survivingRooms)
+    {
         survivingRooms.Sort();
         survivingRooms[0].setIsMainRoom = true;
         survivingRooms[0].setIsAccessibleFromMainRoom = true;
-
         roomConnector.ConnectClosestRooms(survivingRooms);
     }
 
@@ -157,17 +183,22 @@ public class MapGenerator : MonoBehaviour
         {
             for (int y = 0; y < borderedMap.GetLength(1); y++)
             {
-                if (x >= BORDER_SIZE && x < width + BORDER_SIZE && y >= BORDER_SIZE && y < height + BORDER_SIZE)
-                {
-                    borderedMap[x, y] = map[x - BORDER_SIZE, y - BORDER_SIZE];
-                }
-                else
-                {
-                    borderedMap[x, y] = 1;
-                }
+                FillBorderedMapTileWithWall(x, y);
             }
         }
         meshGenerator.GenerateMesh(borderedMap, SQUARE_SIZE);
+    }
+
+    private void FillBorderedMapTileWithWall(int x, int y)
+    {
+        if (x >= BORDER_SIZE && x < width + BORDER_SIZE && y >= BORDER_SIZE && y < height + BORDER_SIZE)
+        {
+            borderedMap[x, y] = map[x - BORDER_SIZE, y - BORDER_SIZE];
+        }
+        else
+        {
+            borderedMap[x, y] = WALL;
+        }
     }
 
     public bool IsInMapRange(int x, int y)
