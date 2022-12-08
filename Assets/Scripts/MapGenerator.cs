@@ -24,7 +24,6 @@ public class MapGenerator : MonoBehaviour
     [Tooltip("Bellow 50 allows small rooms(unconnected) to be spawned")]
     [SerializeField] private int roomThresholdSize = 50;
 
-
     private const int WALL = 1;
     private const int FLOOR = 0;
     private const int BORDER_SIZE = 1;
@@ -216,4 +215,8 @@ public class MapGenerator : MonoBehaviour
     public int getHeight { get { return height; } }
 
     public int[,] getMap { get { return map; } }
+
+    public int getWALL { get { return WALL; } }
+
+    public int getFLOOR { get { return FLOOR; } }
 }

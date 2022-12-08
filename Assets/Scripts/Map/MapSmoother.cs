@@ -23,16 +23,18 @@ public class MapSmoother : MonoBehaviour
     private void SmoothTile(int x, int y)
     {
         int neighbourWallTiles = GetSurroundingWallCount(x, y);
-        int wall = 1;
-        int floor = 0;
+        SetTileTypeRelativeToWallNeighbours(x, y, neighbourWallTiles);
+    }
 
+    private void SetTileTypeRelativeToWallNeighbours(int x, int y, int neighbourWallTiles)
+    {
         if (neighbourWallTiles > 4)
         {
-            mapGenerator.SetMapTile(x, y, wall);
+            mapGenerator.SetMapTile(x, y, mapGenerator.getWALL);
         }
         else if (neighbourWallTiles < 4)
         {
-            mapGenerator.SetMapTile(x, y, floor);
+            mapGenerator.SetMapTile(x, y, mapGenerator.getFLOOR);
         }
     }
 
@@ -43,18 +45,25 @@ public class MapSmoother : MonoBehaviour
         {
             for (int neighbourY = gridY - 1; neighbourY <= gridY + 1; neighbourY++)
             {
-                if (mapGenerator.IsInMapRange(neighbourX, neighbourY))
-                {
-                    if (neighbourX != gridX || neighbourY != gridY)
-                    {
-                        wallCount += mapGenerator.getMap[neighbourX, neighbourY];
-                    }
-                }
-                else
-                {
-                    wallCount++;
-                }
+                wallCount = CountWalls(gridX, gridY, wallCount, neighbourX, neighbourY);
             }
+        }
+
+        return wallCount;
+    }
+
+    private int CountWalls(int gridX, int gridY, int wallCount, int neighbourX, int neighbourY)
+    {
+        if (mapGenerator.IsInMapRange(neighbourX, neighbourY))
+        {
+            if (neighbourX != gridX || neighbourY != gridY)
+            {
+                wallCount += mapGenerator.getMap[neighbourX, neighbourY];
+            }
+        }
+        else
+        {
+            wallCount++;
         }
 
         return wallCount;

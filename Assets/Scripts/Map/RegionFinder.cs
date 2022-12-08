@@ -1,11 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RegionFinder : MonoBehaviour
 {
-    private const int tileUnchecked = 0;
-    private const int tileChecked = 1;
+    private const int TILE_UNCHECKED = 0;
+    private const int TILE_CHECKED = 1;
 
     private MapGenerator mapGenerator;
 
@@ -23,14 +22,14 @@ public class RegionFinder : MonoBehaviour
         {
             for (int y = 0; y < mapGenerator.getHeight; y++)
             {
-                if (mapFlags[x, y] == tileUnchecked && mapGenerator.getMap[x, y] == tileType)
+                if (mapFlags[x, y] == TILE_UNCHECKED && mapGenerator.getMap[x, y] == tileType)
                 {
                     List<Coord> newRegion = GetRegionTiles(x, y);
                     regions.Add(newRegion);
 
                     foreach (Coord tile in newRegion)
                     {
-                        mapFlags[tile.tileX, tile.tileY] = tileChecked;
+                        mapFlags[tile.tileX, tile.tileY] = TILE_CHECKED;
                     }
                 }
             }
@@ -47,7 +46,7 @@ public class RegionFinder : MonoBehaviour
 
         Queue<Coord> queue = new Queue<Coord>();
         queue.Enqueue(new Coord(startX, startY));
-        mapFlags[startX, startY] = tileChecked;
+        mapFlags[startX, startY] = TILE_CHECKED;
 
         while (queue.Count > 0)
         {
@@ -60,9 +59,9 @@ public class RegionFinder : MonoBehaviour
                 {
                     if (mapGenerator.IsInMapRange(x, y) && (y == tile.tileY || x == tile.tileX))
                     {
-                        if (mapFlags[x, y] == tileUnchecked && mapGenerator.getMap[x, y] == tileType)
+                        if (mapFlags[x, y] == TILE_UNCHECKED && mapGenerator.getMap[x, y] == tileType)
                         {
-                            mapFlags[x, y] = tileChecked;
+                            mapFlags[x, y] = TILE_CHECKED;
                             queue.Enqueue(new Coord(x, y));
                         }
                     }
