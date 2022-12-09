@@ -6,6 +6,12 @@ public class RegionFinder : MonoBehaviour
     private const int TILE_UNCHECKED = 0;
     private const int TILE_CHECKED = 1;
 
+    private List<List<Coord>> regions;
+    private Queue<Coord> queue;
+
+    private int[,] mapRegionFlags;
+    private int[,] mapRegionTileFlags;
+
     private MapGenerator mapGenerator;
 
     private void Awake()
@@ -15,38 +21,43 @@ public class RegionFinder : MonoBehaviour
 
     public List<List<Coord>> GetRegions(int tileType)
     {
-        List<List<Coord>> regions = new List<List<Coord>>();
-        int[,] mapFlags = new int[mapGenerator.getWidth, mapGenerator.getHeight];
+        regions = new List<List<Coord>>();
+        mapRegionFlags = new int[mapGenerator.getWidth, mapGenerator.getHeight];
 
         for (int x = 0; x < mapGenerator.getWidth; x++)
         {
             for (int y = 0; y < mapGenerator.getHeight; y++)
             {
-                if (mapFlags[x, y] == TILE_UNCHECKED && mapGenerator.getMap[x, y] == tileType)
-                {
-                    List<Coord> newRegion = GetRegionTiles(x, y);
-                    regions.Add(newRegion);
-
-                    foreach (Coord tile in newRegion)
-                    {
-                        mapFlags[tile.tileX, tile.tileY] = TILE_CHECKED;
-                    }
-                }
+                CheckRegionTiles(tileType, x, y);
             }
         }
 
         return regions;
     }
 
+    private void CheckRegionTiles(int tileType, int x, int y)
+    {
+        if (mapRegionFlags[x, y] == TILE_UNCHECKED && mapGenerator.getMap[x, y] == tileType)
+        {
+            List<Coord> newRegion = GetRegionTiles(x, y);
+            regions.Add(newRegion);
+
+            foreach (Coord tile in newRegion)
+            {
+                mapRegionFlags[tile.tileX, tile.tileY] = TILE_CHECKED;
+            }
+        }
+    }
+
     private List<Coord> GetRegionTiles(int startX, int startY)
     {
         List<Coord> tiles = new List<Coord>();
-        int[,] mapFlags = new int[mapGenerator.getWidth, mapGenerator.getHeight];
+        mapRegionTileFlags = new int[mapGenerator.getWidth, mapGenerator.getHeight];
         int tileType = mapGenerator.getMap[startX, startY];
 
-        Queue<Coord> queue = new Queue<Coord>();
+        queue = new Queue<Coord>();
         queue.Enqueue(new Coord(startX, startY));
-        mapFlags[startX, startY] = TILE_CHECKED;
+        mapRegionTileFlags[startX, startY] = TILE_CHECKED;
 
         while (queue.Count > 0)
         {
@@ -59,9 +70,9 @@ public class RegionFinder : MonoBehaviour
                 {
                     if (mapGenerator.IsInMapRange(x, y) && (y == tile.tileY || x == tile.tileX))
                     {
-                        if (mapFlags[x, y] == TILE_UNCHECKED && mapGenerator.getMap[x, y] == tileType)
+                        if (mapRegionTileFlags[x, y] == TILE_UNCHECKED && mapGenerator.getMap[x, y] == tileType)
                         {
-                            mapFlags[x, y] = TILE_CHECKED;
+                            mapRegionTileFlags[x, y] = TILE_CHECKED;
                             queue.Enqueue(new Coord(x, y));
                         }
                     }
