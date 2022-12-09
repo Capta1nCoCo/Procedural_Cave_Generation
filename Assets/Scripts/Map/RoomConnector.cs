@@ -53,20 +53,25 @@ public class RoomConnector : MonoBehaviour
         {
             foreach (Room room in allRooms)
             {
-                if (room.getIsAccessibleFromMainRoom)
-                {
-                    roomListB.Add(room);
-                }
-                else
-                {
-                    roomListA.Add(room);
-                }
+                DistributeRoomRelativeToItsAccesibilityFromMainRoom(room);
             }
         }
         else
         {
             roomListA = allRooms;
             roomListB = allRooms;
+        }
+    }
+
+    private void DistributeRoomRelativeToItsAccesibilityFromMainRoom(Room room)
+    {
+        if (room.getIsAccessibleFromMainRoom)
+        {
+            roomListB.Add(room);
+        }
+        else
+        {
+            roomListA.Add(room);
         }
     }
 
@@ -107,18 +112,22 @@ public class RoomConnector : MonoBehaviour
             {
                 Coord tileA = roomA.edgeTiles[tileIndexA];
                 Coord tileB = roomB.edgeTiles[tileIndexB];
-                int distanceBetweenRooms = (int)(Mathf.Pow(tileA.tileX - tileB.tileX, 2) + Mathf.Pow(tileA.tileY - tileB.tileY, 2));
-
-                if (distanceBetweenRooms < bestDistance || !possibleConnectionFound)
-                {
-                    bestDistance = distanceBetweenRooms;
-                    possibleConnectionFound = true;
-                    bestTileA = tileA;
-                    bestTileB = tileB;
-                    bestRoomA = roomA;
-                    bestRoomB = roomB;
-                }
+                FindBestDistanceBetweenRooms(roomA, roomB, tileA, tileB);
             }
+        }
+    }
+
+    private void FindBestDistanceBetweenRooms(Room roomA, Room roomB, Coord tileA, Coord tileB)
+    {
+        int distanceBetweenRooms = (int)(Mathf.Pow(tileA.tileX - tileB.tileX, 2) + Mathf.Pow(tileA.tileY - tileB.tileY, 2));
+        if (distanceBetweenRooms < bestDistance || !possibleConnectionFound)
+        {
+            bestDistance = distanceBetweenRooms;
+            possibleConnectionFound = true;
+            bestTileA = tileA;
+            bestTileB = tileB;
+            bestRoomA = roomA;
+            bestRoomB = roomB;
         }
     }
 
@@ -138,6 +147,11 @@ public class RoomConnector : MonoBehaviour
             ConnectClosestRooms(allRooms, true);
         }
 
+        ConnectClosestRoomsWithForcedAcessibilityFromMainRoom();
+    }
+
+    private void ConnectClosestRoomsWithForcedAcessibilityFromMainRoom()
+    {
         if (!forcedAccessibilityFromMainRoom)
         {
             ConnectClosestRooms(allRooms, true);
